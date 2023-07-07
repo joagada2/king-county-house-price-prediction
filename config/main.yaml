@@ -1,0 +1,112 @@
+defaults:
+  - model: model
+  - _self_
+
+processed:
+  path: data/processed/processed.csv
+
+raw:
+  path: data/raw/lending_club_loan_two.csv
+
+unit_testing_data:
+  path: data/unit_testing_data/unit_testing_data.csv
+
+raw_monitoring:
+  dir: data/monitoring_data/raw_monitoring
+  new_df_1:
+    name: new_df_1.csv
+    path: ${raw_monitoring.dir}/${raw_monitoring.new_df_1.name}
+  new_df_2:
+    name: new_df_2.csv
+    path: ${raw_monitoring.dir}/${raw_monitoring.new_df_2.name}
+  new_df_3:
+    name: new_df_3.csv
+    path: ${raw_monitoring.dir}/${raw_monitoring.new_df_3.name}
+  new_df_4:
+    name: new_df_4.csv
+    path: ${raw_monitoring.dir}/${raw_monitoring.new_df_4.name}
+
+processed_monitoring:
+  dir: data/monitoring_data/processed_monitoring
+  new_df_1:
+    name: new_df_1.csv
+    path: ${processed_monitoring.dir}/${processed_monitoring.new_df_1.name}
+  new_df_2:
+    name: new_df_2.csv
+    path: ${processed_monitoring.dir}/${processed_monitoring.new_df_2.name}
+  new_df_3:
+    name: new_df_3.csv
+    path: ${processed_monitoring.dir}/${processed_monitoring.new_df_3.name}
+  new_df_4:
+    name: new_df_4.csv
+    path: ${processed_monitoring.dir}/${processed_monitoring.new_df_4.name}
+
+final_monitoring:
+  dir: data/monitoring_data/final_monitoring
+  X_new_df_1:
+    name: X_new_df_1.csv
+    path: ${final_monitoring.dir}/${final_monitoring.X_new_df_1.name}
+  X_new_df_2:
+    name: X_new_df_2.csv
+    path: ${final_monitoring.dir}/${final_monitoring.X_new_df_2.name}
+  X_new_df_3:
+    name: X_new_df_3.csv
+    path: ${final_monitoring.dir}/${final_monitoring.X_new_df_3.name}
+  X_new_df_4:
+    name: X_new_df_4.csv
+    path: ${final_monitoring.dir}/${final_monitoring.X_new_df_4.name}
+  y_new_df_1:
+    name: y_new_df_1.csv
+    path: ${final_monitoring.dir}/${final_monitoring.X_new_df_1.name}
+  y_new_df_2:
+    name: y_new_df_2.csv
+    path: ${final_monitoring.dir}/${final_monitoring.X_new_df_2.name}
+  y_new_df_3:
+    name: y_new_df_3.csv
+    path: ${final_monitoring.dir}/${final_monitoring.X_new_df_3.name}
+  y_new_df_4:
+    name: y_new_df_4.csv
+    path: ${final_monitoring.dir}/${final_monitoring.X_new_df_4.name}
+
+final:
+  dir: data/final
+  X_train:
+    name: X_train.csv
+    path: ${final.dir}/${final.X_train.name}
+  X_test:
+    name: X_test.csv
+    path: ${final.dir}/${final.X_test.name}
+  y_train:
+    name: y_train.csv
+    path: ${final.dir}/${final.y_train.name}
+  y_test:
+    name: y_test.csv
+    path: ${final.dir}/${final.y_test.name}
+
+prediction_input:
+  path: inferencing/input_data/input_df.csv
+
+prediction_output:
+  path: inferencing/prediction/prediction_df.csv
+
+processed_input:
+  path: inferencing/processed1/processed_df.csv
+
+model:
+  dir: model
+  name: loan_default_pred_model.pkl
+  path: ${model.dir}/${model.name}
+
+model1:
+  dir: app/model1
+  name: loan_default_pred_model_depl.pkl
+  path: ${model1.dir}/${model1.name}
+
+feature:
+  drop: ['emp_title','emp_length','title','grade','issue_d','earliest_cr_line','address','loan_status']
+  test: ['X1','X2']
+  drop1: ['emp_title','emp_length','title','grade','issue_d','earliest_cr_line','address']
+
+mlflow_tracking_ui: https://dagshub.com/joe88data/loan-default-prediction-model.mlflow
+mlflow_USERNAME: joe88data
+mlflow_PASSWORD: e94114ca328c75772401898d749decb6dbcbeb21

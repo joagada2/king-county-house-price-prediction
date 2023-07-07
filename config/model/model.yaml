@@ -1,0 +1,15 @@
+objective: "binary:logistic"
+seed: 42
+gamma: 0
+learning_rate: 0.25
+max_depth: 6
+reg_lambda: 10
+scale_pos_weight: 0.24
+subsample: 0.9
+colsample_bytree: 0.5
+use_label_encoder: False
+missing: 0
+
+verbose: True
+early_stopping_rounds: 10
+eval_metric: "aucpr"
