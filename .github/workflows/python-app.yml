@@ -1,0 +1,38 @@
+name: Python application
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          git fetch --prune --unshallow
+      - name: Set up Python 3.9.17
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9.17
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --user -r requirements.txt
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Test with pytest
+        run: |
+          pip install pytest
+          export PYTHONPATH=src
+          pytest
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.14 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}} #Must be unique in Heroku
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          appdir: "app"
