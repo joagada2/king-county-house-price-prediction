@@ -19,7 +19,7 @@ from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_log_erro
 
 @task
 def get_data():
-    data = pd.read_csv('../data/kc_house_data.csv')
+    data = pd.read_csv('data/raw_data/kc_house_data.csv')
     return data
 
 @task
@@ -37,8 +37,8 @@ def train_model(b):
     X = b.drop('price', axis=1)
     y = b['price']
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=43)
-    X_test.to_csv('../data/test_data/X_test.csv')
-    y_test.to_csv('/../data/test_data/y_test.csv')
+    X_test.to_csv('data/test_data/X_test.csv',index=False)
+    y_test.to_csv('data/test_data/y_test.csv',index=False)
     model = xgb.XGBRegressor(eval_metric='rmsle')
     param_grid = {"max_depth": [5, 6, 7],
                   "n_estimators": [600, 700, 800],
@@ -65,11 +65,12 @@ def evaluate(c):
     #link up to dagshub MLFlow environment
     os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/joe88data/king-county-house-price-prediction.mlflow'
     os.environ['MLFLOW_TRACKING_USERNAME'] = 'joe88data'
-    os.environ['MLFLOW_TRACKING_PASSWORD'] = ''
+    os.environ['MLFLOW_TRACKING_PASSWORD'] = 'e94114ca328c75772401898d749decb6dbcbeb21'
     with mlflow.start_run():
         # Load data and model
-        X_test = pd.read_csv('../data/test_data/X_test.csv')
-        y_test = pd.read_csv('../data/test_data/y_test.csv')
+        X_test = pd.read_csv('data/test_data/X_test.csv')
+        y_test = pd.read_csv('data/test_data/y_test.csv')
+        c = joblib.load('model/king_county_house_price_prediction_model.pkl')
 
         # Get predictions
         prediction = c.predict(X_test)
@@ -130,7 +131,7 @@ schedule = IntervalSchedule(interval=timedelta(minutes=10))
 
 #create and run flow locally. To schedule to workflow to be automatically triggered every 4 hrs,
 #add 'schedule' as Flow parameter (ie with Flow("loan-default-prediction", schedule)
-with Flow("training_pipeline", schedule) as flow:
+with Flow("training_pipeline") as flow:
     data = get_data()
     processed_data = process_data(data)
     model = train_model(processed_data)

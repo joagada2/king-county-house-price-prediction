@@ -14,9 +14,10 @@ def get_data():
 #task to load model
 @task
 def load_model():
-    model = joblib.load('model/model/king_county_house_price_prediction_model.pkl')
+    model = joblib.load('model/king_county_house_price_prediction_model.pkl')
     return model
 
+@task
 def process_data(a):
     a['date'] = pd.to_datetime(a['date'])
     a['month'] = a['date'].apply(lambda date: date.month)

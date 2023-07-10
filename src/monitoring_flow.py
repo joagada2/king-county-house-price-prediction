@@ -11,27 +11,27 @@ import os
 #task to load dataframes 1 to 4
 @task
 def load_first_df():
-    new_df_1 = pd.read_csv('../data/monitoring_data/raw_monitoring/new_df_1.csv')
+    new_df_1 = pd.read_csv('data/monitoring_data/raw_monitoring_data/new_df_1.csv')
     return new_df_1
 
 @task
 def load_second_df():
-    new_df_2 = pd.read_csv('../data/monitoring_data/raw_monitoring/new_df_2.csv')
+    new_df_2 = pd.read_csv('data/monitoring_data/raw_monitoring_data/new_df_2.csv')
     return new_df_2
 
 @task
 def load_third_df():
-    new_df_3 = pd.read_csv('../data/monitoring_data/raw_monitoring/new_df_3.csv')
+    new_df_3 = pd.read_csv('data/monitoring_data/raw_monitoring_data/new_df_3.csv')
     return new_df_3
 
 @task
 def load_fourth_df():
-    new_df_4 = pd.read_csv('../data/monitoring_data/raw_monitoring/new_df_4.csv')
+    new_df_4 = pd.read_csv('data/monitoring_data/raw_monitoring_data/new_df_4.csv')
     return new_df_4
 
 @task
 def get_training_data():
-    training_data = pd.read_csv('../data/raw_data/kc_house_data.csv')
+    training_data = pd.read_csv('data/raw_data/kc_house_data.csv')
     return training_data
 
 #function to process data
@@ -47,7 +47,7 @@ def process_data(a):
 
 @task
 def save_processed_df(b):
-    b.to_csv('../data/monitoring_data/processed_monitoring_data/d.csv')
+    b.to_csv('data/monitoring_data/processed_monitoring_data/d.csv')
 
 @task
 def split_data_x(c):
@@ -61,7 +61,7 @@ def split_data_y(d):
 
 @task
 def save_final_df(e):
-    e.to_csv('../data/monitoring_data/final_monitoring/data/g.csv')
+    e.to_csv('data/monitoring_data/final_monitoring_data/e.csv')
 
 @task
 def monitor_model(h,h1,h2,h3,h4,i1,i2,i3,i4):
@@ -82,9 +82,9 @@ def monitor_model(h,h1,h2,h3,h4,i1,i2,i3,i4):
     print(profile_view1.to_pandas())
 
     # set authentication & project keys
-    os.environ["WHYLABS_DEFAULT_ORG_ID"] = 'enter_org_id'
-    os.environ["WHYLABS_API_KEY"] = 'enter_api_key'
-    os.environ["WHYLABS_DEFAULT_DATASET_ID"] = 'enter_model_id'
+    os.environ["WHYLABS_DEFAULT_ORG_ID"] = 'org-YNx5UG'
+    os.environ["WHYLABS_API_KEY"] = 'aGFhQwX3RG.x9xDO2Znc3R0SMc6G6EiuoiOLavy11VwtPQ5zkyIWbIFPo5pzeFwk'
+    os.environ["WHYLABS_DEFAULT_DATASET_ID"] = 'model-6'
 
     # Single Profile
     writer = WhyLabsWriter()
@@ -112,25 +112,20 @@ def monitor_model(h,h1,h2,h3,h4,i1,i2,i3,i4):
 
     #Logging output
     pred_df_X = df_X
-    model = joblib.load('model/loan_default_pred_model.pkl')
+    model = joblib.load('model/king_county_house_price_prediction_model.pkl')
 
     for i, df in enumerate(pred_df_X):
         y_pred = model.predict(df)
-        y_prob = model.predict_proba(df)
         pred_scores = []
-        pred_classes = []
 
         for pred in y_pred:
-            pred_classes.append(pred)
-        df['class_output'] = pred_classes
-        for prob in y_prob:
-            pred_scores.append(max(prob))
-        df['prob_output'] = pred_scores
+            pred_scores.append(pred)
+        df['predicted_price'] = pred_scores
         print(pred_scores)
 
     writer = WhyLabsWriter()
     for i, df in enumerate(pred_df_X):
-        out_df = df[['class_output', 'prob_output']].copy()
+        out_df = df[['predicted_price']].copy()
         # walking backwards. Each dataset has to map to a date to show up as a different batch in WhyLabs
         dt = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(days=i)
         profile = why.log(out_df).profile()
@@ -147,11 +142,10 @@ def monitor_model(h,h1,h2,h3,h4,i1,i2,i3,i4):
     # Log performance
     #print(pred_df_X[0])
     for i, df in enumerate(pred_df_X):
-        results = why.log_classification_metrics(
+        results = why.log_regression_metrics(
             df,
             target_column="ground_truth",
-            prediction_column="class_output",
-            score_column="prob_output"
+            prediction_column="predicted_price",
         )
         # walking backwards. Each dataset has to map to a date to show up as a different batch in WhyLabs
         dt = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(days=i)
@@ -163,7 +157,7 @@ def monitor_model(h,h1,h2,h3,h4,i1,i2,i3,i4):
 
 schedule = IntervalSchedule(interval=timedelta(hours=24))
 
-with Flow('model_monitoring_pipeline',schedule) as flow:
+with Flow('model_monitoring_pipeline') as flow:
     new_df_1 = load_first_df()
     new_df_2 = load_second_df()
     new_df_3 = load_third_df()
@@ -206,5 +200,5 @@ with Flow('model_monitoring_pipeline',schedule) as flow:
 
 flow.run()
 #connect to prefect 1 cloud
-flow.register(project_name='loan-default-prediction')
+flow.register(project_name='king-county-house-price-prediction')
 flow.run_agent()
