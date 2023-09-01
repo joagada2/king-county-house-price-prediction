@@ -47,4 +47,3 @@ The following steps can be followed to clone and run the project
   - Git - For project version control
   - DVC - For data version control
   - etc
-### contact me on whatsapp number +2348155337422 for further clarifications on this project. Note: I am open to new opportunities in machine learning
